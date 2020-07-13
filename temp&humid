@@ -1,0 +1,30 @@
+#!/usr/bin/python3
+import RPi.GPIO as GPIO
+import Adafruit_DHT
+import time
+import urllib.request as urllib
+import os
+
+sensor = Adafruit_DHT.DHT11
+pin = 4
+while True:
+    humidity, temperature = Adafruit_DHT.read_retry(sensor,pin)
+    if humidity is not None and temperature is not None:
+        str = 'temperature:{:.1f},humidity:{:.0f}%'.format(temperature,humidity)
+        print(str)
+        os.system('mosquitto_pub -t aaa -m %s' %str)
+        time.sleep(10) 
+        
+        
+        #with open('dht.html','w') as f:
+        # f.write('<html><head><meta charset="UTF-8"><meta http-equiv="refresh"  content="5"><title>Document</title></head><body><h1>')
+        # f.write('<scipt>')
+        # f.write('</scipt>')
+        # f.write('</h1></body></html>')
+        # f.flush()
+        #     
+        
+              
+        
+        response = urllib.urlopen('https://api.thingspeak.com/update?api_key=3OKTA3NH6WYNIVSW&field2={}&field1={}'.format(temperature,humidity))
+        time.sleep(20)
